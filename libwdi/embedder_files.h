@@ -147,8 +147,10 @@ struct emb embeddable_fixed[] = {
 	{ 0, "winusb.inf.in", "" },
 	{ 0, "libusb0.inf.in", "" },
 	{ 0, "libusbk.inf.in", "" },
+	{ 0, "wdi_cdc.inf.in", "" },
 // cat file lists for self signing
 	{ 0, "winusb.cat.in", "" },
 	{ 0, "libusb0.cat.in", "" },
 	{ 0, "libusbk.cat.in", "" },
+	{ 0, "wdi_cdc.cat.in", "" },
 };

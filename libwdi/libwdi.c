@@ -54,11 +54,11 @@ static BOOL dlls_available = FALSE;
 static BOOL filter_driver = FALSE;
 static DWORD timeout = DEFAULT_TIMEOUT;
 static HANDLE pipe_handle = INVALID_HANDLE_VALUE;
-static VS_FIXEDFILEINFO driver_version[WDI_NB_DRIVERS-1] = { {0}, {0}, {0} };
-static const char* driver_name[WDI_NB_DRIVERS-1] = {"winusbcoinstaller2.dll", "libusb0.sys", "libusbK.sys"};
-static const char* inf_template[WDI_NB_DRIVERS-1] = {"winusb.inf.in", "libusb0.inf.in", "libusbk.inf.in"};
-static const char* cat_template[WDI_NB_DRIVERS-1] = {"winusb.cat.in", "libusb0.cat.in", "libusbk.cat.in"};
-static const char* ms_compat_id[WDI_NB_DRIVERS-1] = {"MS_COMP_WINUSB", "MS_COMP_LIBUSB0", "MS_COMP_LIBUSBK"};
+static VS_FIXEDFILEINFO driver_version[WDI_NB_DRIVERS-1] = { {0}, {0}, {0}, {0} };
+static const char* driver_name[WDI_NB_DRIVERS-1] = {"winusbcoinstaller2.dll", "libusb0.sys", "libusbK.sys", ""};
+static const char* inf_template[WDI_NB_DRIVERS-1] = {"winusb.inf.in", "libusb0.inf.in", "libusbk.inf.in", "wdi_cdc.inf.in"};
+static const char* cat_template[WDI_NB_DRIVERS-1] = {"winusb.cat.in", "libusb0.cat.in", "libusbk.cat.in", "wdi_cdc.cat.in"};
+static const char* ms_compat_id[WDI_NB_DRIVERS-1] = {"MS_COMP_WINUSB", "MS_COMP_LIBUSB0", "MS_COMP_LIBUSBK", "MS_COMP_WDICDC"};
 // for 64 bit platforms detection
 static BOOL (__stdcall *pIsWow64Process)(HANDLE, PBOOL) = NULL;
 static int windows_version = WINDOWS_UNDEFINED;
@@ -459,7 +459,7 @@ int get_version_info(int driver_type, VS_FIXEDFILEINFO* driver_info)
 // Find out if the driver selected is actually embedded in this version of the library
 BOOL LIBWDI_API wdi_is_driver_supported(int driver_type, VS_FIXEDFILEINFO* driver_info)
 {
-	if (driver_type < WDI_USER) {	// github issue #40
+	if (driver_type < WDI_CDC) {	// github issue #40
 		if (driver_info != NULL) {
 			memset(driver_info, 0, sizeof(VS_FIXEDFILEINFO));
 		}
@@ -497,6 +497,8 @@ BOOL LIBWDI_API wdi_is_driver_supported(int driver_type, VS_FIXEDFILEINFO* drive
 #else
 		return FALSE;
 #endif
+	case WDI_CDC:
+		return TRUE;
 	default:
 		wdi_err("unknown driver type");
 		return FALSE;
@@ -980,7 +982,7 @@ int LIBWDI_API wdi_prepare_driver(struct wdi_device_info* device_info, const cha
 {
 	const wchar_t bom = 0xFEFF;
 #if defined(ENABLE_DEBUG_LOGGING) || defined(INCLUDE_DEBUG_LOGGING)
-	const char* driver_display_name[WDI_NB_DRIVERS] = { "WinUSB", "libusb0.sys", "libusbK.sys", "user driver" };
+	const char* driver_display_name[WDI_NB_DRIVERS] = { "WinUSB", "libusb0.sys", "libusbK.sys", "Generic USB CDC", "user driver" };
 #endif
 	const char* inf_ext = ".inf";
 	const char* vendor_name = NULL;
